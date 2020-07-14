@@ -26,11 +26,24 @@ HTML, CSS, JS, Node.js, express.js, Heroku
 Credit to Tia Low.
 
 ## Time Estimate
-Number and name of feature: 1 Repository setup
+
+#### Feature 1
+Number and name of feature: Repository setup
 
 Estimate of time needed to complete: 20min
 
 Start time: 2:40pm
+
+Finish time: 3:45pm
+
+Actual time needed to complete: 1hr 5min
+
+#### Feature 2
+Number and name of feature: location areas of interest
+
+Estimate of time needed to complete: 40min
+
+Start time: 4:10pm
 
 Finish time: 
 
