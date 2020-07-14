@@ -14,8 +14,8 @@ const app = express();
 app.use(cors());
 
 // this lets us serve a website from a directory
-app.use(express.static('./public'));
-const { response } = require('express');
+// app.use(express.static('./public'));
+// const { response } = require('express');
 
 // the dotenv library lets us grab the PORT var from the .env using the magic words process.env.variableName
 const PORT = process.env.PORT || 3001;
@@ -69,6 +69,7 @@ function weatherHandler(request, response){
     response.status(500).send('It\'s not you it\'s us, we messed up.');
   }
 }
+
 function Location(location, obj){
   this.search_query = location;
   this.formatted_query = obj[0].display_name;

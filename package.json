@@ -1,6 +1,6 @@
 {
   "name": "city_explorer_api",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "**Author**: Blake Romero **Version**: 1.0.0 (increment the patch/fix version number if you make more commits past your first submission)",
   "main": "server.js",
   "scripts": {
