@@ -45,6 +45,28 @@ Estimate of time needed to complete: 40min
 
 Start time: 4:10pm
 
-Finish time: 
+Finish time: 5pm
 
-Actual time needed to complete: 
+Actual time needed to complete: 1hr 10min
+
+#### Feature 3
+Number and name of feature: weather for location
+
+Estimate of time needed to complete: 40min
+
+Start time: 520pm
+
+Finish time: 630pm
+
+Actual time needed to complete: 1hr 10min
+
+#### Feature 4
+Number and name of feature: error handling
+
+Estimate of time needed to complete: 40min
+
+Start time: 10pm
+
+Finish time: 1025pm
+
+Actual time needed to complete: 25min
