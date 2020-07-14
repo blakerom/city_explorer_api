@@ -29,6 +29,25 @@ app.get('/location',(request, response) => {
   response.send(obj);
 })
 
+app.get('/weather', (request, response) => {
+//   <li>
+//   The forecast for {{ time }} is: {{ forecast }}
+// </li>
+
+  let weatherData = require('./data/weather.json');
+
+  let weatherArray = [];
+  weatherData.data.forEach(weartherTime => {
+    weatherArray.push(new Weather(weartherTime));
+  })
+  response.send(weatherArray);
+})
+
+function Weather(obj){
+  this.time = obj.datetime;
+  this.forecast = obj.weather.description;
+}
+
 function Location(location, obj){
   this.search_query = location;
   this.formatted_query = obj[0].display_name;
