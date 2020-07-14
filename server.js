@@ -14,6 +14,7 @@ const app = express();
 app.use(express.static('./public'));
 
 const cors = require('cors');
+const { response } = require('express');
 app.use(cors());
 
 // the dotenv library lets us grab the PORT var from the .env using the magic words process.env.variableName
@@ -21,19 +22,21 @@ const PORT = process.env.PORT;
 
 
 app.get('/location',(request, response) => {
-  let city = request.query.city;
-  let geoData = require('./data/location.json');
+  try{
+    let city = request.query.city;
+    let geoData = require('./data/location.json');
 
-  const obj = new Location(city, geoData);
-  console.log('from appget', city, geoData);
-  response.send(obj);
+    const obj = new Location(city, geoData);
+
+    response.send(obj);
+  }
+  catch(error){
+    console.log('ERROR', error);
+    response.status(500).send('It\'s not you it\'s us, we messed up.');
+  }
 })
 
 app.get('/weather', (request, response) => {
-//   <li>
-//   The forecast for {{ time }} is: {{ forecast }}
-// </li>
-
   let weatherData = require('./data/weather.json');
 
   let weatherArray = [];
@@ -43,16 +46,20 @@ app.get('/weather', (request, response) => {
   response.send(weatherArray);
 })
 
-function Weather(obj){
-  this.time = obj.datetime;
-  this.forecast = obj.weather.description;
-}
-
 function Location(location, obj){
   this.search_query = location;
   this.formatted_query = obj[0].display_name;
   this.latitude = obj[0].lat;
   this.longitude = obj[0].lon;
+}
+
+function Weather(obj){
+  this.time = obj.datetime;
+  this.forecast = obj.weather.description;
+}
+
+function Errors(){
+
 }
 // app.get('/', function (request, response) {
 //   response.send('Hello World');
