@@ -70,3 +70,25 @@ Start time: 10pm
 Finish time: 1025pm
 
 Actual time needed to complete: 25min
+
+#### Feature 5
+Number and name of feature: refactor foreach to .map
+
+Estimate of time needed to complete: 30min
+
+Start time: 215pm
+
+Finish time: 3pm
+
+Actual time needed to complete: 45min
+
+#### Feature 5
+Number and name of feature: add location api
+
+Estimate of time needed to complete: 60min
+
+Start time: 3pm
+
+Finish time: 
+
+Actual time needed to complete: 
