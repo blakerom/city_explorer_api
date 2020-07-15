@@ -25,10 +25,11 @@ app.get('/location', locationHandler);
 
 app.get('/weather', weatherHandler);
 
+app.get('/trails', trailHandler);
+
 
 function locationHandler(request, response){
   let city = request.query.city;
-  // let geoData = require('./data/location.json');
   let url = `https://us1.locationiq.com/v1/search.php`;
 
   let queryParams = {
@@ -52,12 +53,10 @@ function locationHandler(request, response){
 }
 
 function weatherHandler(request, response){
-    // let weatherData = require('./data/weather.json');
     let url = `http://api.weatherbit.io/v2.0/forecast/daily`;
 
     let queryParams = {
       key: process.env.WEATHER_API_KEY,
-      // city: request.query.search_query,
       lat: request.query.latitude,
       lon: request.query.longitude,
       days: 8
@@ -76,19 +75,31 @@ function weatherHandler(request, response){
         console.log('ERROR', error);
         response.status(500).send('It\'s not you, it\'s us!');
       })
-    
+}
 
-  //   weatherData.data.map(weatherObj => {
-  //     return new Weather(weatherObj);
-  //   })
-  //   // weatherData.data.forEach(weatherTime => {
-  //   //   new Weather(weatherTime);
-  //   // })
-  //   response.send(weatherArray);
-  // }
-  // catch(error){
-  //   console.log('ERROR', error);
-  //   response.status(500).send('It\'s not you it\'s us, we messed up.');
+function trailHandler(request, response){
+  let url = 'https://www.hikingproject.com/data/get-trails'
+
+  let queryParams = {
+    key: process.env.TRAIL_API_KEY,
+    lat: request.query.latitude,
+    lon: request.query.longitude,
+    maxResults: 10
+  }
+
+  superagent.get(url)
+    .query(queryParams)
+    .then(results => {
+      let trailData = results.body;
+      let obj = trailData['trails'].map(trailObj => {
+        return new Trails(trailObj);
+      })
+      response.status(200).send(obj);
+    })
+    .catch((error) => {
+      console.log('ERROR', error);
+      response.status(500).send('We done messed it up.');
+    })
 }
 
 function Location(location, obj){
@@ -101,6 +112,19 @@ function Location(location, obj){
 function Weather(obj){
   this.time = new Date(obj.datetime).toDateString();
   this.forecast = obj.weather.description;
+}
+
+function Trails(obj){
+  this.name = obj.name;
+  this.location = obj.location;
+  this.length = obj.length;
+  this.stars = obj.stars;
+  this.star_votes = obj.starVotes;
+  this.summary = obj.summary;
+  this.trail_url = obj.url;
+  this.conditions = obj.conditionDetails;
+  this.condition_date = new Date(obj.conditionDate).toDateString();
+  this.condition_time = new Date(obj.conditionDate).toTimeString();
 }
 // app.get('/', function (request, response) {
 //   response.send('Hello World');
