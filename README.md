@@ -82,12 +82,23 @@ Finish time: 3pm
 
 Actual time needed to complete: 45min
 
-#### Feature 5
+#### Feature 6
 Number and name of feature: add location api
 
 Estimate of time needed to complete: 60min
 
 Start time: 3pm
+
+Finish time: 636pm
+
+Actual time needed to complete: 3.5hrs
+
+#### Feature 7
+Number and name of feature: add trails
+
+Estimate of time needed to complete: 90min
+
+Start time: 640pm
 
 Finish time: 
 
