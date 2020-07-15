@@ -1,7 +1,7 @@
 # city_explorer_api
 
 **Author**: Blake Romero
-**Version**: 1.0.0 (increment the patch/fix version number if you make more commits past your first submission)
+**Version**: 1.0.2 (increment the patch/fix version number if you make more commits past your first submission)
 
 ## Overview
 <!-- Provide a high level overview of what this application is and why you are building it, beyond the fact that it's an assignment for this class. (i.e. What's your problem domain?) -->
@@ -24,6 +24,8 @@ HTML, CSS, JS, Node.js, express.js, Heroku
 ## Credits and Collaborations
 <!-- Give credit (and a link) to other people or resources that helped you build this application. -->
 Credit to Tia Low.
+Credit to Claudio Bailon.
+Credit to Meghan Domeck.
 
 ## Time Estimate
 
@@ -100,6 +102,6 @@ Estimate of time needed to complete: 90min
 
 Start time: 640pm
 
-Finish time: 
+Finish time: 715pm
 
-Actual time needed to complete: 
+Actual time needed to complete: 35min
