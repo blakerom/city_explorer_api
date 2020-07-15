@@ -19,7 +19,6 @@ app.use(cors());
 
 // the dotenv library lets us grab the PORT var from the .env using the magic words process.env.variableName
 const PORT = process.env.PORT || 3001;
-const weatherArray = [];
 
 
 app.get('/location', locationHandler);
@@ -44,30 +43,52 @@ function locationHandler(request, response){
     .then(results => {
       let geoData = results.body;
       const obj = new Location(city, geoData);
-      response.send(obj);
+      response.status(200).send(obj);
     })
     .catch((error) => {
       console.log('ERROR', error);
       response.status(500).send('Our bad. Wheels aren\'t spinning!');
-    });
+    })
 }
 
 function weatherHandler(request, response){
-  try{
-    let weatherData = require('./data/weather.json');
+    // let weatherData = require('./data/weather.json');
+    let url = `http://api.weatherbit.io/v2.0/forecast/daily`;
 
-    weatherData.data.map(weatherObj => {
-      return new Weather(weatherObj);
-    })
-    // weatherData.data.forEach(weatherTime => {
-    //   new Weather(weatherTime);
-    // })
-    response.send(weatherArray);
-  }
-  catch(error){
-    console.log('ERROR', error);
-    response.status(500).send('It\'s not you it\'s us, we messed up.');
-  }
+    let queryParams = {
+      key: process.env.WEATHER_API_KEY,
+      // city: request.query.search_query,
+      lat: request.query.latitude,
+      lon: request.query.longitude,
+      days: 8
+    }
+
+    superagent.get(url)
+      .query(queryParams)
+      .then(results => {
+        let weatherData = results.body;
+        let obj = weatherData['data'].map(day => {
+          return new Weather(day);
+        })
+        response.status(200).send(obj);
+      })
+      .catch((error) => {
+        console.log('ERROR', error);
+        response.status(500).send('It\'s not you, it\'s us!');
+      })
+    
+
+  //   weatherData.data.map(weatherObj => {
+  //     return new Weather(weatherObj);
+  //   })
+  //   // weatherData.data.forEach(weatherTime => {
+  //   //   new Weather(weatherTime);
+  //   // })
+  //   response.send(weatherArray);
+  // }
+  // catch(error){
+  //   console.log('ERROR', error);
+  //   response.status(500).send('It\'s not you it\'s us, we messed up.');
 }
 
 function Location(location, obj){
@@ -80,9 +101,7 @@ function Location(location, obj){
 function Weather(obj){
   this.time = new Date(obj.datetime).toDateString();
   this.forecast = obj.weather.description;
-  weatherArray.push(this);
 }
-
 // app.get('/', function (request, response) {
 //   response.send('Hello World');
 // });
