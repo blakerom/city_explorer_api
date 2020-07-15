@@ -1,7 +1,7 @@
 # city_explorer_api
 
 **Author**: Blake Romero
-**Version**: 1.0.2 (increment the patch/fix version number if you make more commits past your first submission)
+**Version**: 1.0.3 (increment the patch/fix version number if you make more commits past your first submission)
 
 ## Overview
 <!-- Provide a high level overview of what this application is and why you are building it, beyond the fact that it's an assignment for this class. (i.e. What's your problem domain?) -->
@@ -105,3 +105,36 @@ Start time: 640pm
 Finish time: 715pm
 
 Actual time needed to complete: 35min
+
+#### Feature 8
+Number and name of feature: Create database
+
+Estimate of time needed to complete: 120min
+
+Start time: 246pm
+
+Finish time: 
+
+Actual time needed to complete: 
+
+#### Feature 9
+Number and name of feature: 
+
+Estimate of time needed to complete: 90min
+
+Start time: 
+
+Finish time: 
+
+Actual time needed to complete: 
+
+#### Feature 10
+Number and name of feature: 
+
+Estimate of time needed to complete: 90min
+
+Start time: 
+
+Finish time: 
+
+Actual time needed to complete:

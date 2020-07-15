@@ -3,6 +3,7 @@
 const express = require('express'); // express server library
 const cors = require('cors'); // bad bodyguard that allows everyone in
 const superagent = require('superagent');
+const pg = require('pg');
 const { json } = require('express');
 
 // bring in the dotenv library
@@ -13,6 +14,10 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 
+const client = new pg.Client(process.env.DATABASE_URL);
+client.on('error', err => {
+  console.log('ERROR', err);
+});
 // this lets us serve a website from a directory
 // app.use(express.static('./public'));
 // const { response } = require('express');
@@ -26,6 +31,10 @@ app.get('/location', locationHandler);
 app.get('/weather', weatherHandler);
 
 app.get('/trails', trailHandler);
+
+app.get('/add', addToDatabase);
+
+app.get('/show', showDatabase);
 
 
 function locationHandler(request, response){
@@ -126,16 +135,35 @@ function Trails(obj){
   this.condition_date = new Date(obj.conditionDate).toDateString();
   this.condition_time = new Date(obj.conditionDate).toTimeString();
 }
-// app.get('/', function (request, response) {
-//   response.send('Hello World');
-// });
 
-// app.get('/bananas', (request, response) => {
-//   response.send('I am bananas about bananas');
-// });
+function addToDatabase(request, response){
+  let lat = request.query.latitude;
+  let lon = request.query.latitude;
+
+  let sql = 'INSERT INTO locations (latitude, longitude) VALUES ($1, $2) RETURNING id;';
+  let safeValues = [lat, lon];
+
+  client.query(sql, safeValues)
+    .then(resultsFromPostgres => {
+      let id = resultsFromPostgres.rows;
+      console.log('id is',id);
+    });
+}
+
+function showDatabase(request, response){
+  let sql = 'SELECT * FROM locations;';
+  client.query(sql)
+  .then(resultsFromPostgres => {
+    let storedLocation = resultsFromPostgres.rows;
+    response.send(storedLocation);
+    console.log('from the showDataabse function', storedLocation);
+  }).catch(err => console.log(err));
+}
  
 // turn on the server
-
-app.listen(PORT, () => {
-  console.log(`listening on ${PORT}`);
+client.connect()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`listening on ${PORT}`);
+    }).catch(err => console.log('ERROR;, err'));
 });
