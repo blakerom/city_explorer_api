@@ -71,16 +71,16 @@ function locationHandler(request, response){
   .then(results => {
     let geoData = results.body;
     const obj = new Location(city, geoData);
-    response.status(200).send(obj);
-
-    let sql = 'INSERT INTO locations (city, formatted_city, latitude, longitude) VALUES ($1, $2, $3, $4) RETURNING id;';
+    // items inside table schema should match constructor function name scheme 100%
+    let sql = 'INSERT INTO locations (search_query, formatted_query, latitude, longitude) VALUES ($1, $2, $3, $4) RETURNING id;';
     let safeValues = [obj.search_query, obj.formatted_query, obj.latitude, obj.longitude];
     
     client.query(sql, safeValues)
-    .then(resultsFromPostgres => {
-      let id = resultsFromPostgres.rows;
-      console.log('id is',id);
-    });
+    // .then(resultsFromPostgres => {
+      //   let id = resultsFromPostgres.rows;
+      //   console.log('id is',id);
+    // });
+    response.status(200).send(obj);
   })
   
   .catch((error) => {
