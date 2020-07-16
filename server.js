@@ -14,7 +14,7 @@ require('dotenv').config();
 const app = express();
 app.use(cors());
 
-const client = new pg.Client(process.env.DATABASE_URL);
+const client = new pg.Client(process.env.WINDOWS_DATABASE_URL);
 client.on('error', err => {
   console.log('ERROR', err);
 });
@@ -26,16 +26,34 @@ client.on('error', err => {
 const PORT = process.env.PORT || 3001;
 
 
-app.get('/location', locationHandler);
+app.get('/location', lookupDatabase);
 
 app.get('/weather', weatherHandler);
 
 app.get('/trails', trailHandler);
 
-app.get('/add', addToDatabase);
-
-app.get('/show', showDatabase);
-
+function lookupDatabase(request, response){
+  let city = request.query.city;
+  let sql = 'SELECT * FROM locations;';
+  // `SELECT * FROM locations WHERE city=${request.query.city};`
+  client.query(sql)
+  .then(resultsFromPostgres => {
+    let storedLocation = resultsFromPostgres.rows;
+    let previousLocations = [];
+    storedLocation.forEach(obj => {
+      if (obj.city === city){
+        previousLocations.push(obj);
+      }
+    })
+    if (previousLocations.length === 0){
+      locationHandler(request, response);
+    }
+    else {
+      response.status(200).send(previousLocations[0]);
+      console.log('returned from storage: ', previousLocations[0]);
+    }
+  }).catch(err => console.log(err));
+}
 
 function locationHandler(request, response){
   let city = request.query.city;
@@ -49,16 +67,27 @@ function locationHandler(request, response){
   }
 
   superagent.get(url)
-    .query(queryParams)
-    .then(results => {
-      let geoData = results.body;
-      const obj = new Location(city, geoData);
-      response.status(200).send(obj);
-    })
-    .catch((error) => {
-      console.log('ERROR', error);
-      response.status(500).send('Our bad. Wheels aren\'t spinning!');
-    })
+  .query(queryParams)
+  .then(results => {
+    let geoData = results.body;
+    const obj = new Location(city, geoData);
+    response.status(200).send(obj);
+
+    let sql = 'INSERT INTO locations (city, formatted_city, latitude, longitude) VALUES ($1, $2, $3, $4) RETURNING id;';
+    let safeValues = [obj.search_query, obj.formatted_query, obj.latitude, obj.longitude];
+    
+    client.query(sql, safeValues)
+    .then(resultsFromPostgres => {
+      let id = resultsFromPostgres.rows;
+      console.log('id is',id);
+    });
+  })
+  
+  .catch((error) => {
+    console.log('ERROR', error);
+    response.status(500).send('Our bad. Wheels aren\'t spinning!');
+  })
+
 }
 
 function weatherHandler(request, response){
@@ -111,6 +140,21 @@ function trailHandler(request, response){
     })
 }
 
+// function addToDatabase(request, response){
+//   let lat = request.query.latitude;
+//   let lon = request.query.latitude;
+
+//   let sql = 'INSERT INTO locations (latitude, longitude) VALUES ($1, $2) RETURNING id;';
+//   let safeValues = [lat, lon];
+
+//   client.query(sql, safeValues)
+//     .then(resultsFromPostgres => {
+//       let id = resultsFromPostgres.rows;
+//       console.log('id is',id);
+//     });
+// }
+
+//======================================== Constructors============================================
 function Location(location, obj){
   this.search_query = location;
   this.formatted_query = obj[0].display_name;
@@ -136,34 +180,9 @@ function Trails(obj){
   this.condition_time = new Date(obj.conditionDate).toTimeString();
 }
 
-function addToDatabase(request, response){
-  let lat = request.query.latitude;
-  let lon = request.query.latitude;
-
-  let sql = 'INSERT INTO locations (latitude, longitude) VALUES ($1, $2) RETURNING id;';
-  let safeValues = [lat, lon];
-
-  client.query(sql, safeValues)
-    .then(resultsFromPostgres => {
-      let id = resultsFromPostgres.rows;
-      console.log('id is',id);
-    });
-}
-
-function showDatabase(request, response){
-  let sql = 'SELECT * FROM locations;';
-  client.query(sql)
-  .then(resultsFromPostgres => {
-    let storedLocation = resultsFromPostgres.rows;
-    response.send(storedLocation);
-    console.log('from the showDataabse function', storedLocation);
-  }).catch(err => console.log(err));
-}
- 
-// turn on the server
+//====================================== turn on the server========================================
 client.connect()
   .then(() => {
     app.listen(PORT, () => {
-      console.log(`listening on ${PORT}`);
-    }).catch(err => console.log('ERROR;, err'));
-});
+      console.log(`listening on ${PORT}`)})
+    }).catch(err => console.log('ERROR', err));

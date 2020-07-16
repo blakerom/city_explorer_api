@@ -113,27 +113,27 @@ Estimate of time needed to complete: 120min
 
 Start time: 246pm
 
-Finish time: 
+Finish time: 320pm
 
-Actual time needed to complete: 
+Actual time needed to complete: 45min
 
 #### Feature 9
-Number and name of feature: 
+Number and name of feature: Add database check and storage
 
 Estimate of time needed to complete: 90min
 
-Start time: 
+Start time: 320pm
 
-Finish time: 
+Finish time: 652pm
 
-Actual time needed to complete: 
+Actual time needed to complete: 3.5hrs
 
 #### Feature 10
-Number and name of feature: 
+Number and name of feature: Deploy
 
-Estimate of time needed to complete: 90min
+Estimate of time needed to complete: 45min
 
-Start time: 
+Start time: 7pm
 
 Finish time: 
 
