@@ -100,9 +100,9 @@ Number and name of feature: add trails
 
 Estimate of time needed to complete: 90min
 
-Start time: 640pm
+Start time: 6:40pm
 
-Finish time: 715pm
+Finish time: 7:15pm
 
 Actual time needed to complete: 35min
 
@@ -113,7 +113,7 @@ Estimate of time needed to complete: 120min
 
 Start time: 246pm
 
-Finish time: 320pm
+Finish time: 3:20pm
 
 Actual time needed to complete: 45min
 
@@ -122,9 +122,9 @@ Number and name of feature: Add database check and storage
 
 Estimate of time needed to complete: 90min
 
-Start time: 320pm
+Start time: 3:20pm
 
-Finish time: 652pm
+Finish time: 6:52pm
 
 Actual time needed to complete: 3.5hrs
 
@@ -135,6 +135,6 @@ Estimate of time needed to complete: 45min
 
 Start time: 7pm
 
-Finish time: 
+Finish time: 7:04pm
 
-Actual time needed to complete:
+Actual time needed to complete: 4min

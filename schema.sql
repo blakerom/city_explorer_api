@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS people;
+-- DROP TABLE IF EXISTS people;
 
 CREATE TABLE locations (
   id SERIAL PRIMARY KEY,
