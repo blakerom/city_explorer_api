@@ -32,34 +32,44 @@ app.get('/weather', weatherHandler);
 
 app.get('/trails', trailHandler);
 
+app.get('/movies', movieHandler);
+
 app.get('/restaurants', restaurantHandler);
+
+function movieHandler(request, response){
+  // "title": "Sleepless in Seattle",
+  //   "overview": "A young boy who tries to set his dad up on a date after the death of his mother. He calls into a radio station to talk about his dad’s loneliness which soon leads the dad into meeting a Journalist Annie who flies to Seattle to write a story about the boy and his dad. Yet Annie ends up with more than just a story in this popular romantic comedy.",
+  //   "average_votes": "6.60",
+  //   "total_votes": "881",
+  //   "image_url": "https://image.tmdb.org/t/p/w500/afkYP15OeUOD0tFEmj6VvejuOcz.jpg",
+  //   "popularity": "8.2340",
+  //   "released_on": "1993-06-24"
+  let city = request.query.search_query;
+  let url = `https://api.themoviedb.org/3/search/movie`;
+
+  let queryParams = {
+    api_key: process.env.MOVIE_API_KEY,
+    query: city,
+    page: 1
+  }
+
+  superagent.get(url)
+  .query(queryParams)
+  .then(results => {
+    let movieData = results.body.results.map(movie => {
+      return new Movies(movie);
+    });
+    response.status(200).send(movieData);
+  })
+  .catch((error) => {
+    console.log('ERROR', error);
+    response.status(500).send('We done messed it up.');
+  })
+}
 
 function restaurantHandler(request, response){
 
 }
-
-// function lookupDatabase(request, response){
-//   let city = request.query.city;
-//   let sql = 'SELECT * FROM locations;';
-//   // `SELECT * FROM locations WHERE city=${request.query.city};`
-//   client.query(sql)
-//   .then(resultsFromPostgres => {
-//     let storedLocation = resultsFromPostgres.rows;
-//     let previousLocations = [];
-//     storedLocation.forEach(obj => {
-//       if (obj.city === city){
-//         previousLocations.push(obj);
-//       }
-//     })
-//     if (previousLocations.length === 0){
-//       locationHandler(request, response);
-//     }
-//     else {
-//       response.status(200).send(previousLocations[0]);
-//       console.log('returned from storage: ', previousLocations[0]);
-//     }
-//   }).catch(err => console.log(err));
-// }
 
 function locationHandler(request, response){
   let city = request.query.city;
@@ -179,6 +189,16 @@ function Trails(obj){
   this.conditions = obj.conditionDetails;
   this.condition_date = new Date(obj.conditionDate).toDateString();
   this.condition_time = new Date(obj.conditionDate).toTimeString();
+}
+
+function Movies(obj){
+  this.title = obj.title;
+  this.overview = obj.overview;
+  this.average_votes = obj.vote_average;
+  this.total_votes = obj.vote_count;
+  this.image_url = `https://image.tmdb.org/t/p/w500${obj.poster_path}`;
+  this.popularity = obj.popularity;
+  this.released_on = obj.release_date;
 }
 
 //====================================== turn on the server========================================
