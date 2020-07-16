@@ -26,34 +26,40 @@ client.on('error', err => {
 const PORT = process.env.PORT || 3001;
 
 
-app.get('/location', lookupDatabase);
+app.get('/location', locationHandler);
 
 app.get('/weather', weatherHandler);
 
 app.get('/trails', trailHandler);
 
-function lookupDatabase(request, response){
-  let city = request.query.city;
-  let sql = 'SELECT * FROM locations;';
-  // `SELECT * FROM locations WHERE city=${request.query.city};`
-  client.query(sql)
-  .then(resultsFromPostgres => {
-    let storedLocation = resultsFromPostgres.rows;
-    let previousLocations = [];
-    storedLocation.forEach(obj => {
-      if (obj.city === city){
-        previousLocations.push(obj);
-      }
-    })
-    if (previousLocations.length === 0){
-      locationHandler(request, response);
-    }
-    else {
-      response.status(200).send(previousLocations[0]);
-      console.log('returned from storage: ', previousLocations[0]);
-    }
-  }).catch(err => console.log(err));
+app.get('/restaurants', restaurantHandler);
+
+function restaurantHandler(request, response){
+
 }
+
+// function lookupDatabase(request, response){
+//   let city = request.query.city;
+//   let sql = 'SELECT * FROM locations;';
+//   // `SELECT * FROM locations WHERE city=${request.query.city};`
+//   client.query(sql)
+//   .then(resultsFromPostgres => {
+//     let storedLocation = resultsFromPostgres.rows;
+//     let previousLocations = [];
+//     storedLocation.forEach(obj => {
+//       if (obj.city === city){
+//         previousLocations.push(obj);
+//       }
+//     })
+//     if (previousLocations.length === 0){
+//       locationHandler(request, response);
+//     }
+//     else {
+//       response.status(200).send(previousLocations[0]);
+//       console.log('returned from storage: ', previousLocations[0]);
+//     }
+//   }).catch(err => console.log(err));
+// }
 
 function locationHandler(request, response){
   let city = request.query.city;
@@ -66,28 +72,37 @@ function locationHandler(request, response){
     limit: 1
   }
 
-  superagent.get(url)
-  .query(queryParams)
-  .then(results => {
-    let geoData = results.body;
-    const obj = new Location(city, geoData);
-    // items inside table schema should match constructor function name scheme 100%
-    let sql = 'INSERT INTO locations (search_query, formatted_query, latitude, longitude) VALUES ($1, $2, $3, $4) RETURNING id;';
-    let safeValues = [obj.search_query, obj.formatted_query, obj.latitude, obj.longitude];
-    
-    client.query(sql, safeValues)
-    // .then(resultsFromPostgres => {
-      //   let id = resultsFromPostgres.rows;
-      //   console.log('id is',id);
-    // });
-    response.status(200).send(obj);
-  })
+  let sql = 'SELECT * FROM locations WHERE search_query=$1;';
+  let safeValues = [city];
   
-  .catch((error) => {
-    console.log('ERROR', error);
-    response.status(500).send('Our bad. Wheels aren\'t spinning!');
-  })
+  client.query(sql, safeValues)
+  .then(resultsFromPostgres => {
+      if(resultsFromPostgres.rowCount){
+        console.log('Found location in the database!');
+        let locationObject = resultsFromPostgres.rows[0];
+        response.status(200).send(locationObject);
+      }
+      else {
+        console.log('Did not find location in the database.');
+        superagent.get(url)
+        .query(queryParams)
+        .then(resultsFromSuperAgent => {
+          let geoData = resultsFromSuperAgent.body;
+          const obj = new Location(city, geoData);
 
+          //save to database for later use
+          let sql = 'INSERT INTO locations (search_query, formatted_query, latitude, longitude) VALUES ($1, $2, $3, $4) RETURNING id;';
+          let safeValues = [obj.search_query, obj.formatted_query, obj.latitude, obj.longitude];
+
+          client.query(sql, safeValues);
+
+          response.status(200).send(obj);
+        }).catch((error) => {
+          console.log('ERROR', error);
+          response.status(500).send('Our bad. Wheels aren\'t spinning!');
+        })
+      }
+  });
 }
 
 function weatherHandler(request, response){
@@ -139,20 +154,6 @@ function trailHandler(request, response){
       response.status(500).send('We done messed it up.');
     })
 }
-
-// function addToDatabase(request, response){
-//   let lat = request.query.latitude;
-//   let lon = request.query.latitude;
-
-//   let sql = 'INSERT INTO locations (latitude, longitude) VALUES ($1, $2) RETURNING id;';
-//   let safeValues = [lat, lon];
-
-//   client.query(sql, safeValues)
-//     .then(resultsFromPostgres => {
-//       let id = resultsFromPostgres.rows;
-//       console.log('id is',id);
-//     });
-// }
 
 //======================================== Constructors============================================
 function Location(location, obj){
