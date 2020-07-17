@@ -155,19 +155,19 @@ Number and name of feature: Yelp API
 
 Estimate of time needed to complete: 60min
 
-Start time: 
+Start time: 4:45pm
 
-Finish time: 
+Finish time: 6pm
 
-Actual time needed to complete: 
+Actual time needed to complete: 75min
 
 #### Feature 13
-Number and name of feature: 
+Number and name of feature: Pagination
 
-Estimate of time needed to complete: 45min
+Estimate of time needed to complete: 25min
 
-Start time: 
+Start time: 6pm
 
-Finish time: 
+Finish time: 6:15pm
 
-Actual time needed to complete: 
+Actual time needed to complete: 15min
