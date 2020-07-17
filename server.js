@@ -34,16 +34,37 @@ app.get('/trails', trailHandler);
 
 app.get('/movies', movieHandler);
 
-app.get('/restaurants', restaurantHandler);
+app.get('/yelp', yelpHandler);
+
+
+function yelpHandler(request, response){
+  // "name": "Umi Sake House",
+  //   "image_url": "https://s3-media3.fl.yelpcdn.com/bphoto/c-XwgpadB530bjPUAL7oFw/o.jpg",
+  //   "price": "$$   ",
+  //   "rating": "4.0",
+  //   "url": "https://www.yelp.com/biz/umi-sake-house-seattle?adjust_creative=uK0rfzqjBmWNj6-d3ujNVA&utm_campaign=yelp_api_v3&utm_medium=api_v3_business_search&utm_source=uK0rfzqjBmWNj6-d3ujNVA"
+  let url = `https://api.yelp.com/v3/businesses/search`;
+
+  let queryParams = {
+    latitude: request.query.latitude,
+    longitude: request.query.longitude,
+    term: 'restaurant'
+    // start: start,
+    // count: numPerPage
+  }
+
+  superagent.get(url)
+  .set('Authorization', `Bearer ${process.env.YELP_API_KEY}`)
+  .query(queryParams)
+  .then(results => {
+    const resultsArray = results.body.businesses;
+    console.log('results',results.body);
+    const restaurantData = resultsArray.map(eatery => new Restaurant(eatery));
+    response.status(200).send(restaurantData);
+  })
+}
 
 function movieHandler(request, response){
-  // "title": "Sleepless in Seattle",
-  //   "overview": "A young boy who tries to set his dad up on a date after the death of his mother. He calls into a radio station to talk about his dad’s loneliness which soon leads the dad into meeting a Journalist Annie who flies to Seattle to write a story about the boy and his dad. Yet Annie ends up with more than just a story in this popular romantic comedy.",
-  //   "average_votes": "6.60",
-  //   "total_votes": "881",
-  //   "image_url": "https://image.tmdb.org/t/p/w500/afkYP15OeUOD0tFEmj6VvejuOcz.jpg",
-  //   "popularity": "8.2340",
-  //   "released_on": "1993-06-24"
   let city = request.query.search_query;
   let url = `https://api.themoviedb.org/3/search/movie`;
 
@@ -65,10 +86,6 @@ function movieHandler(request, response){
     console.log('ERROR', error);
     response.status(500).send('We done messed it up.');
   })
-}
-
-function restaurantHandler(request, response){
-
 }
 
 function locationHandler(request, response){
@@ -199,6 +216,14 @@ function Movies(obj){
   this.image_url = `https://image.tmdb.org/t/p/w500${obj.poster_path}`;
   this.popularity = obj.popularity;
   this.released_on = obj.release_date;
+}
+
+function Restaurant(obj){
+  this.name = obj.name;
+  this.image_url = obj.image_url;
+  this.price = obj.price;
+  this.rating = obj.rating;
+  this.url = obj.url;
 }
 
 //====================================== turn on the server========================================
